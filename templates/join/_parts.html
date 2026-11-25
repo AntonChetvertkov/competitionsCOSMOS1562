@@ -1,0 +1,12 @@
+{# Shared bits of the participant pages. #}
+{% macro team_box(entry, idp) %}
+{% set link = url_for('join.team', code=entry.join_code, _external=True) %}
+<div class="team-box">
+  <p class="team-box-t"><span data-i18n="j.team.code">Team code</span>: <strong class="team-code">{{ entry.join_code }}</strong></p>
+  <p class="hint" data-i18n="j.team.share">Send this link to your teammates so they can join.</p>
+  <div class="row-copy">
+    <input class="copy-field" id="{{ idp }}-link" type="text" readonly value="{{ link }}" aria-label="Team link">
+    <button class="btn-ghost" type="button" data-join-copy="{{ idp }}-link"><span class="copy-idle" data-i18n="j.copy">Copy link</span><span class="copy-done" data-i18n="j.copied" hidden>Copied</span></button>
+  </div>
+</div>
+{% endmacro %}

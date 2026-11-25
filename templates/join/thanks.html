@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'join/_parts.html' import team_box %}
+{% block title %}{{ contest.title }} | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='join.css') }}">{% endblock %}
+{% block content %}
+<section class="join">
+  <p class="who">{{ contest.title }}</p>
+  {% if contest.thank_you_text %}
+  <h1 class="thanks-h" data-i18n="j.thanks.t">Thank you</h1>
+  <p class="desc">{{ contest.thank_you_text }}</p>
+  {% else %}
+  <h1 class="thanks-h" data-i18n="j.thanks.default">Thanks, your answers are in.</h1>
+  {% endif %}
+
+  {% if entry.status == 'pending' %}
+  <p class="notice" data-i18n="j.thanks.pending">The organiser will review your entry.</p>
+  {% endif %}
+
+  {% if is_captain and entry.join_code %}
+  <h2 class="sub" data-i18n="j.team.invite">Invite your team</h2>
+  {{ team_box(entry, 'thanks') }}
+  {% endif %}
+
+  <p class="back">
+    <a class="btn btn-main" href="{{ url_for('participant') }}" data-i18n="j.mine">My competitions</a>
+    {% if is_captain and contest.accepts_edits() %}
+    <a class="btn-ghost" href="{{ url_for('join.form', token=contest.invite_token) }}" data-i18n="j.edit">Edit answers</a>
+    {% endif %}
+  </p>
+</section>
+{% include 'join/_copy.html' %}
+{% endblock %}

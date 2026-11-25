@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Admin | competitions.c1562{% endblock %}
+{% block content %}
+<section class="dash">
+  <div class="dash-head"><h1 data-i18n="adm.title">Admin</h1></div>
+  <dl class="stats">
+    <div><dt data-i18n="adm.users">Users</dt><dd>{{ stats.users }}</dd></div>
+    <div><dt data-i18n="adm.contests">Competitions</dt><dd>{{ stats.contests }}</dd></div>
+    <div><dt data-i18n="adm.entries">Entries</dt><dd>{{ stats.entries }}</dd></div>
+  </dl>
+
+  <h2 class="sub" data-i18n="adm.req">Organiser requests</h2>
+  {% if pending %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr>
+        <th scope="col" data-i18n="adm.c.name">Name</th>
+        <th scope="col" data-i18n="adm.c.email">Email</th>
+        <th scope="col" data-i18n="adm.c.org">Organisation</th>
+        <th scope="col" data-i18n="adm.c.msg">Message</th>
+        <th scope="col" data-i18n="adm.c.date">Sent</th>
+        <th scope="col"><span class="sr-only" data-i18n="adm.c.act">Actions</span></th>
+      </tr></thead>
+      <tbody>
+      {% for r in pending %}
+      <tr>
+        <td>{{ r.user.full_name }}</td>
+        <td>{{ r.user.email }}</td>
+        <td>{{ r.organisation }}</td>
+        <td class="cell-wrap">{{ r.message }}</td>
+        <td>{{ r.created_at.strftime('%d.%m.%Y') }}</td>
+        <td class="cell-actions">
+          <form class="inline-form" method="post" action="{{ url_for('admin_decide', request_id=r.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="decision" value="approved">
+            <button class="btn-ghost btn-ghost-main" type="submit" data-i18n="adm.approve">Approve</button>
+          </form>
+          <form class="inline-form" method="post" action="{{ url_for('admin_decide', request_id=r.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="decision" value="rejected">
+            <button class="btn-ghost" type="submit" data-i18n="adm.reject">Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty-line" data-i18n="adm.none">No requests waiting.</p>
+  {% endif %}
+
+  <h2 class="sub" data-i18n="adm.recent">Recent decisions</h2>
+  {% if decided %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr>
+        <th scope="col" data-i18n="adm.c.name">Name</th>
+        <th scope="col" data-i18n="adm.c.org">Organisation</th>
+        <th scope="col" data-i18n="adm.c.status">Decision</th>
+        <th scope="col" data-i18n="adm.c.reviewed">Reviewed</th>
+      </tr></thead>
+      <tbody>
+      {% for r in decided %}
+      <tr>
+        <td>{{ r.user.full_name }}</td>
+        <td>{{ r.organisation }}</td>
+        <td><span class="pill pill-{{ r.status }}" data-i18n="rstatus.{{ r.status }}">{{ 'Approved' if r.status == 'approved' else 'Rejected' }}</span></td>
+        <td>{% if r.reviewed_at %}{{ r.reviewed_at.strftime('%d.%m.%Y') }}{% endif %}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty-line" data-i18n="adm.nodec">No decisions yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

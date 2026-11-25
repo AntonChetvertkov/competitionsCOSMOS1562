@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% from 'join/_parts.html' import team_box %}
+{% block title %}My competitions | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='join.css') }}">{% endblock %}
+{% block content %}
+<section class="dash">
+  <p class="dash-who">{{ g.user.full_name }}</p>
+  <div class="dash-head">
+    <h1 data-i18n="me.title">My competitions</h1>
+  </div>
+  <div class="dash-cols">
+    <div>
+      {% if entries %}
+      <ul class="list">
+        {% for e in entries %}
+        <li class="list-row">
+          <div class="row-main">
+            <p class="row-title">{{ e.contest.title }}</p>
+            <p class="row-meta"><span><span data-i18n="me.joined">Joined</span> {{ e.created_at.strftime('%d.%m.%Y') }}</span>{% if e.team_name %}<span class="row-team"><span data-i18n="j.team.name">Team name</span>: {{ e.team_name }}</span>{% endif %}</p>
+          </div>
+          <span class="pill pill-{{ e.status }}" data-i18n="status.{{ e.status }}">{{ {'pending': 'Under review', 'approved': 'Taking part', 'rejected': 'Not accepted', 'withdrawn': 'Withdrawn'}[e.status] }}</span>
+          {% set captain = e.members|selectattr('user_id', 'equalto', g.user.id)|selectattr('is_captain')|list|length > 0 %}
+          {% if e.join_code or e.contest.invite_token %}
+          <div class="row-extra">
+            {% if e.join_code %}{{ team_box(e, 'entry' ~ e.id) }}{% endif %}
+            {% if e.contest.invite_token %}
+            <p class="row-links">
+              {% if captain and e.contest.accepts_edits() %}
+              <a href="{{ url_for('join.form', token=e.contest.invite_token) }}" data-i18n="j.edit">Edit answers</a>
+              {% else %}
+              <a href="{{ url_for('join.form', token=e.contest.invite_token) }}" data-i18n="j.view">View answers</a>
+              {% endif %}
+            </p>
+            {% endif %}
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty">
+        <h2 data-i18n="me.empty.t">No competitions yet</h2>
+        <p data-i18n="me.empty.d">When an organiser sends you an invite link, open it, fill in the form, and the competition will appear here.</p>
+      </div>
+      {% endif %}
+    </div>
+    <aside class="side-note">
+      <p data-i18n="me.side">Want to run a competition for your school or club?</p>
+      <a href="{{ url_for('organiser') }}" data-i18n="me.side.link">Go to organiser tools</a>
+    </aside>
+  </div>
+</section>
+{% include 'join/_copy.html' %}
+{% endblock %}

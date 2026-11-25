@@ -1,0 +1,22 @@
+.resp-back { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 16px; }
+.resp-back a { color: var(--muted); font-weight: 500; }
+.resp-back a:hover { color: var(--ink); }
+.resp-sub { color: var(--muted); margin: 6px 0 0; }
+.resp .dash-head h1 { overflow-wrap: anywhere; }
+.resp-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.resp-filter { display: inline-flex; gap: 8px; align-items: baseline; padding: 6px 14px; border: 1.5px solid var(--line); border-radius: 999px; color: var(--ink); font-weight: 600; font-size: .92rem; }
+.resp-filter:hover { border-color: var(--ink); }
+.resp-filter.is-on { border-color: var(--ink); background: var(--ink); color: var(--page); }
+.resp-count { font-variant-numeric: tabular-nums; opacity: .75; }
+.resp-wrap { max-width: 100%; }
+.resp-table { min-width: 720px; }
+.resp-table th, .resp-table td { padding-right: 18px; }
+.resp-num { color: var(--muted); font-variant-numeric: tabular-nums; width: 1%; }
+.resp-who { min-width: 200px; max-width: 280px; overflow-wrap: anywhere; position: sticky; left: 0; background: var(--page); z-index: 1; }
+.resp-team { display: block; margin-bottom: 4px; }
+.resp-person + .resp-person { margin-top: 6px; }
+.resp-mail { display: block; color: var(--muted); font-size: .85rem; }
+.resp-date { white-space: nowrap; color: var(--muted); }
+.resp-q { min-width: 180px; max-width: 320px; }
+.resp-clamp { display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .resp-who { position: static; } }

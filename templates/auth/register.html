@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Create account | competitions.c1562{% endblock %}
+{% block content %}
+<section class="auth">
+  <div class="auth-card">
+    <h1 data-i18n="reg.title">Create an account</h1>
+    <form class="form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-row">
+        <div class="field">
+          <label for="first_name" data-i18n="f.first">First name</label>
+          <input id="first_name" name="first_name" type="text" autocomplete="given-name" required value="{{ form.first_name }}">
+        </div>
+        <div class="field">
+          <label for="last_name" data-i18n="f.last">Last name</label>
+          <input id="last_name" name="last_name" type="text" autocomplete="family-name" required value="{{ form.last_name }}">
+        </div>
+      </div>
+      <div class="field">
+        <label for="email" data-i18n="f.email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required value="{{ form.email }}">
+      </div>
+      <div class="field">
+        <label for="password" data-i18n="f.password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint">
+        <p class="hint" id="password-hint" data-i18n="f.password_hint">At least 8 characters.</p>
+      </div>
+      <button class="btn btn-main" type="submit" data-i18n="reg.submit">Create account</button>
+    </form>
+    <p class="auth-alt"><span data-i18n="reg.have">Already have an account?</span> <a href="{{ url_for('auth.login', next=request.args.get('next')) }}" data-i18n="reg.signin">Sign in</a></p>
+  </div>
+</section>
+{% endblock %}

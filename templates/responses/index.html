@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Answers | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='responses.css') }}">{% endblock %}
+{% block content %}
+{% set status_en = {'pending': 'Under review', 'approved': 'Taking part', 'rejected': 'Not accepted', 'withdrawn': 'Withdrawn'} %}
+<section class="dash resp">
+  <p class="resp-back">
+    <a href="{{ url_for('organiser') }}" data-i18n="r.back">Back to my competitions</a>
+    <a href="{{ url_for('builder.edit', contest_id=contest.id) }}" data-i18n="r.edit">Edit questionnaire</a>
+  </p>
+  <div class="dash-head">
+    <div>
+      <h1>{{ contest.title }}</h1>
+      <p class="resp-sub" data-i18n="r.answers">Answers</p>
+    </div>
+    <a class="btn btn-main" href="{{ url_for('responses.csv_export', contest_id=contest.id) }}" data-i18n="r.csv">Download CSV</a>
+  </div>
+
+  <nav class="resp-filters" aria-label="Filter">
+    {% for f in filters %}
+    <a class="resp-filter{% if f == current %} is-on{% endif %}" href="{{ url_for('responses.index', contest_id=contest.id, status=f) }}"{% if f == current %} aria-current="true"{% endif %}>
+      <span data-i18n="r.f.{{ f }}">{{ 'All' if f == 'all' else status_en[f] }}</span>
+      <span class="resp-count">{{ counts[f] }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+
+  {% if rows %}
+  <div class="table-wrap resp-wrap">
+    <table class="table resp-table">
+      <thead><tr>
+        <th scope="col" class="resp-num">#</th>
+        <th scope="col" class="resp-who" data-i18n="r.c.who">Participants</th>
+        <th scope="col" data-i18n="r.c.status">Status</th>
+        <th scope="col" data-i18n="r.c.sent">Submitted</th>
+        {% for f in contest.fields %}<th scope="col" class="resp-q">{{ f.label }}</th>{% endfor %}
+        <th scope="col"><span class="sr-only" data-i18n="r.c.act">Actions</span></th>
+      </tr></thead>
+      <tbody>
+      {% for r in rows %}
+      {% set e = r.entry %}
+      <tr>
+        <td class="resp-num">{{ e.id }}</td>
+        <td class="resp-who">
+          {% if contest.entry_kind == 'team' and e.team_name %}<strong class="resp-team">{{ e.team_name }}</strong>{% endif %}
+          {% for p in r.people %}<div class="resp-person">{{ p.full_name }}<span class="resp-mail">{{ p.email or '' }}</span></div>{% endfor %}
+        </td>
+        <td><span class="pill pill-{{ e.status }}" data-i18n="status.{{ e.status }}">{{ status_en[e.status] }}</span></td>
+        <td class="resp-date">{{ e.created_at.strftime('%d.%m.%Y %H:%M') }} UTC</td>
+        {% for f in contest.fields %}
+        {% set v = r.answers.get(f.id, '') %}
+        <td class="resp-q"><div class="resp-clamp" title="{{ v }}">{{ v }}</div></td>
+        {% endfor %}
+        <td class="cell-actions">
+          {% if e.status != 'approved' %}
+          <form class="inline-form" method="post" action="{{ url_for('responses.decide', contest_id=contest.id, entry_id=e.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="decision" value="approved">
+            <input type="hidden" name="status" value="{{ current }}">
+            <button class="btn-ghost btn-ghost-main" type="submit" data-i18n="r.approve">Approve</button>
+          </form>
+          {% endif %}
+          {% if e.status != 'rejected' %}
+          <form class="inline-form" method="post" action="{{ url_for('responses.decide', contest_id=contest.id, entry_id=e.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="decision" value="rejected">
+            <input type="hidden" name="status" value="{{ current }}">
+            <button class="btn-ghost" type="submit" data-i18n="r.reject">Reject</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% elif counts.all %}
+  <p class="empty-line" data-i18n="r.nonehere">No entries with this status.</p>
+  {% else %}
+  <p class="empty-line" data-i18n="r.empty">No answers yet. Share the link and they'll appear here.</p>
+  {% endif %}
+</section>
+{% endblock %}

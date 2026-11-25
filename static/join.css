@@ -1,0 +1,74 @@
+/* Participant pages: questionnaire form, thank-you, team join, rows on /lms.
+   Colours come from the tokens in landing.css, so light and dark both work. */
+
+.join { max-width: 680px; margin: 0 auto; padding: clamp(24px, 5vw, 56px) var(--gutter) clamp(48px, 7vw, 88px); }
+.join h1 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.12; overflow-wrap: anywhere; }
+.join .cover { display: block; width: 100%; max-height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 24px; }
+.join .desc { margin-top: 14px; white-space: pre-line; overflow-wrap: anywhere; max-width: 60ch; }
+.join .who { margin: 14px 0 24px; color: var(--muted); font-size: .95rem; overflow-wrap: anywhere; }
+.join .who strong { color: var(--ink); }
+.join .sub { font-size: 1.25rem; margin: 32px 0 12px; }
+.join .back { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
+.join .back a:not([class]) { color: var(--ink); font-weight: 600; }
+.join .back .btn { display: inline-block; }
+.join .back .btn-ghost { text-decoration: none; display: inline-block; padding: 12px 20px; font-size: 1rem; }
+.join .notice { margin-top: 20px; }
+.join .muted { color: var(--muted); }
+.join .ro-team { margin: 20px 0 0; }
+
+.banner { margin-bottom: 24px; padding: 12px 16px; border-left: 4px solid var(--orange); background: var(--flag-bg); color: var(--flag-ink); font-weight: 600; }
+
+.join-form { margin-top: 8px; gap: 26px; }
+.q { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 8px; }
+.q legend, .q > label { font-weight: 600; font-size: 1rem; padding: 0; }
+.q legend { margin-bottom: 8px; }
+.req { color: var(--miss); font-weight: 700; margin-left: 2px; }
+.q .hint { margin: -2px 0 2px; }
+.q select {
+  width: 100%; padding: 10px 12px; font: inherit; color: var(--ink);
+  background: var(--page); border: 1.5px solid var(--line); border-radius: 8px;
+}
+.q select:hover { border-color: var(--muted); }
+.q select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.q input[type="number"], .q input[type="date"] { max-width: 280px; }
+.opt { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; cursor: pointer; font-weight: 400; }
+.opt input[type="radio"], .opt input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--blue); }
+:root[data-theme="dark"] .opt input[type="radio"], :root[data-theme="dark"] .opt input[type="checkbox"] { accent-color: var(--orange); }
+.opt span { overflow-wrap: anywhere; }
+.opt-other { flex-wrap: wrap; align-items: center; cursor: default; }
+.opt-lbl { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.q .other-text {
+  flex: 1 1 200px; min-width: 0; padding: 8px 10px; font: inherit; color: var(--ink);
+  background: var(--page); border: 1.5px solid var(--line); border-radius: 8px;
+}
+.q > .other-text { width: 100%; flex: none; }
+.other-text[hidden] { display: none; }
+.has-err input[type="text"], .has-err input[type="number"], .has-err input[type="date"],
+.has-err textarea, .has-err select { border-color: var(--miss); }
+.q-err { color: var(--miss); font-weight: 600; font-size: .92rem; }
+
+.answers { margin: 24px 0 0; border-top: 3px solid var(--ink); }
+.answer-row { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.answer-row dt { font-weight: 600; overflow-wrap: anywhere; }
+.answer-row dd { margin: 4px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
+.join .answers + .inline-form, .join .answers + .back { margin-top: 24px; }
+.join .inline-form { display: block; margin-top: 24px; }
+
+.thanks-h { margin-top: 4px; }
+
+.team-box { border: 1.5px solid var(--line); border-radius: 10px; padding: 16px; background: var(--paper); display: grid; gap: 8px; }
+.team-box-t { overflow-wrap: anywhere; }
+.team-code { font-family: ui-monospace, Consolas, monospace; }
+.team-box .row-copy { flex: 1 1 auto; }
+
+/* Extra lines inside a row on /lms */
+.row-extra { flex: 1 1 100%; display: grid; gap: 10px; }
+.row-extra .team-box { max-width: 560px; }
+.row-links { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.row-links a { font-weight: 600; }
+.row-team { overflow-wrap: anywhere; }
+
+@media (max-width: 640px) {
+  .join .back .btn { width: 100%; text-align: center; }
+  .join-form .btn { width: 100%; }
+}

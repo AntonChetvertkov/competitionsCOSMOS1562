@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% from 'join/_parts.html' import team_box %}
+{% block title %}{{ contest.title }} | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='join.css') }}">{% endblock %}
+
+{% macro req(f) %}{% if f.is_required %}<span class="req" aria-hidden="true">*</span><span class="sr-only" data-i18n="j.required"> (required)</span>{% endif %}{% endmacro %}
+
+{% macro err(f) %}{% if errors.get(f.id) %}<p class="q-err" id="err-{{ f.id }}"><span data-i18n="{{ errors[f.id][0] }}">{{ errors[f.id][1] }}</span></p>{% endif %}{% endmacro %}
+
+{% block content %}
+{% set readonly = (mode == 'readonly') %}
+<section class="join">
+  {% if preview %}
+  <p class="banner" role="note" data-i18n="j.preview">Preview: this is how participants see it. Answers can't be sent from here.</p>
+  {% endif %}
+
+  {% if contest.cover_path %}
+  <img class="cover" src="{{ url_for('builder.cover_file', name=contest.cover_path) }}" alt="">
+  {% endif %}
+  <h1>{{ contest.title }}</h1>
+  {% if contest.description %}<p class="desc">{{ contest.description }}</p>{% endif %}
+  <p class="who"><span data-i18n="j.signedin">You're signed in as</span> <strong>{{ g.user.full_name }}</strong></p>
+
+  {% if readonly %}
+  <p class="notice">
+    {% if can_leave %}<span data-i18n="j.ro.member">You are a member of this team. Only the captain can change the answers.</span>
+    {% elif is_captain %}<span data-i18n="j.ro.closed">Entries are closed. Your answers can no longer be changed.</span>
+    {% elif entry and contest.accepts_edits() %}<span data-i18n="j.ro.member">You are a member of this team. Only the captain can change the answers.</span>
+    {% else %}<span data-i18n="j.ro.closed">Entries are closed. Your answers can no longer be changed.</span>{% endif %}
+  </p>
+  {% if contest.entry_kind == 'team' and entry %}
+  <p class="ro-team"><span data-i18n="j.team.name">Team name</span>: <strong>{{ entry.team_name }}</strong></p>
+  {% endif %}
+  <dl class="answers">
+    {% for f in contest.fields %}
+    <div class="answer-row">
+      <dt>{{ f.label }}</dt>
+      <dd>{% if answers.get(f.id) %}{{ answers[f.id].display() }}{% else %}<span class="muted" data-i18n="j.noanswer">No answer</span>{% endif %}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+  {% if can_leave %}
+  <form class="inline-form" method="post" action="{{ url_for('join.leave', code=entry.join_code) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn-ghost" type="submit" data-i18n="j.leave">Leave team</button>
+  </form>
+  {% endif %}
+  <p class="back"><a href="{{ url_for('participant') }}" data-i18n="j.mine">My competitions</a></p>
+
+  {% else %}
+  {% if errors or team_error %}
+  <p class="flash flash-error" role="alert" data-i18n="j.err.fix">Some answers need fixing. They are marked below.</p>
+  {% endif %}
+  <form class="form join-form" method="post" {% if not preview %}action="{{ url_for('join.form', token=contest.invite_token) }}"{% endif %} novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    {% if contest.entry_kind == 'team' %}
+    <div class="field q{% if team_error %} has-err{% endif %}">
+      <label for="team_name"><span data-i18n="j.team.name">Team name</span> <span class="req" aria-hidden="true">*</span><span class="sr-only" data-i18n="j.required"> (required)</span></label>
+      <input id="team_name" name="team_name" type="text" maxlength="100" value="{{ team_name }}" required{% if team_error %} aria-describedby="err-team"{% endif %}>
+      {% if team_error %}<p class="q-err" id="err-team"><span data-i18n="{{ team_error[0] }}">{{ team_error[1] }}</span></p>{% endif %}
+      {% if mode == 'new' %}<p class="hint" data-i18n="j.team.hint">You will get a link to invite teammates after sending.</p>{% endif %}
+    </div>
+    {% endif %}
+
+    {% if mode == 'edit' and entry and entry.join_code %}
+    {{ team_box(entry, 'form') }}
+    {% endif %}
+
+    {% for f in contest.fields %}
+    {% set v = vals.get(f.id) or {'text': '', 'option': '', 'multi': [], 'other': ''} %}
+    {% set e = errors.get(f.id) %}
+    {% set k = 'q' ~ f.id %}
+    {% set desc = [] %}
+    {% if f.help_text %}{% set _ = desc.append('help-' ~ f.id) %}{% endif %}
+    {% if e %}{% set _ = desc.append('err-' ~ f.id) %}{% endif %}
+
+    {% if f.kind in ('single', 'multiple') %}
+    <fieldset class="q{% if e %} has-err{% endif %}"{% if desc %} aria-describedby="{{ desc|join(' ') }}"{% endif %}>
+      <legend>{{ f.label }}{{ req(f) }}</legend>
+      {% if f.help_text %}<p class="hint" id="help-{{ f.id }}">{{ f.help_text }}</p>{% endif %}
+      {% for o in f.options %}
+      <label class="opt">
+        {% if f.kind == 'single' %}
+        <input type="radio" name="{{ k }}" value="{{ o.id }}"{% if v.option == o.id|string %} checked{% endif %}>
+        {% else %}
+        <input type="checkbox" name="{{ k }}" value="{{ o.id }}"{% if o.id|string in v.multi %} checked{% endif %}>
+        {% endif %}
+        <span>{{ o.label }}</span>
+      </label>
+      {% endfor %}
+      {% if f.allows_other %}
+      <div class="opt opt-other">
+        <label class="opt-lbl">
+          {% if f.kind == 'single' %}
+          <input type="radio" name="{{ k }}" value="__other__"{% if v.option == '__other__' %} checked{% endif %}>
+          {% else %}
+          <input type="checkbox" name="{{ k }}" value="__other__"{% if '__other__' in v.multi %} checked{% endif %}>
+          {% endif %}
+          <span data-i18n="j.other">Other</span>
+        </label>
+        <input class="other-text" type="text" name="{{ k }}_other" maxlength="300" value="{{ v.other }}" aria-label="Other">
+      </div>
+      {% endif %}
+      {{ err(f) }}
+    </fieldset>
+
+    {% else %}
+    <div class="field q{% if e %} has-err{% endif %}">
+      <label for="{{ k }}">{{ f.label }}{{ req(f) }}</label>
+      {% if f.help_text %}<p class="hint" id="help-{{ f.id }}">{{ f.help_text }}</p>{% endif %}
+      {% set da = ' aria-describedby="' ~ desc|join(' ') ~ '"' if desc else '' %}
+      {% set rq = ' required' if f.is_required else '' %}
+      {% if f.kind == 'short_text' %}
+      <input id="{{ k }}" name="{{ k }}" type="text" maxlength="300" value="{{ v.text }}"{{ rq|safe }}{{ da|safe }}>
+      {% elif f.kind == 'long_text' %}
+      <textarea id="{{ k }}" name="{{ k }}" rows="5" maxlength="5000"{{ rq|safe }}{{ da|safe }}>{{ v.text }}</textarea>
+      {% elif f.kind == 'number' %}
+      <input id="{{ k }}" name="{{ k }}" type="number" step="any" value="{{ v.text }}"{{ rq|safe }}{{ da|safe }}>
+      {% elif f.kind == 'date' %}
+      <input id="{{ k }}" name="{{ k }}" type="date" value="{{ v.text }}"{{ rq|safe }}{{ da|safe }}>
+      {% elif f.kind == 'dropdown' %}
+      <select id="{{ k }}" name="{{ k }}" data-other="{{ k }}_other"{{ rq|safe }}{{ da|safe }}>
+        <option value="" data-i18n="j.choose">Choose an answer</option>
+        {% for o in f.options %}<option value="{{ o.id }}"{% if v.option == o.id|string %} selected{% endif %}>{{ o.label }}</option>{% endfor %}
+        {% if f.allows_other %}<option value="__other__"{% if v.option == '__other__' %} selected{% endif %} data-i18n="j.other_dots">Other...</option>{% endif %}
+      </select>
+      {% if f.allows_other %}
+      <input class="other-text" id="{{ k }}_other" type="text" name="{{ k }}_other" maxlength="300" value="{{ v.other }}" aria-label="Other">
+      {% endif %}
+      {% endif %}
+      {{ err(f) }}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% if preview %}
+    <button class="btn btn-main" type="submit" disabled data-i18n="j.send">Send answers</button>
+    {% elif mode == 'edit' %}
+    <button class="btn btn-main" type="submit" data-i18n="j.save">Save changes</button>
+    {% else %}
+    <button class="btn btn-main" type="submit" data-i18n="j.send">Send answers</button>
+    {% endif %}
+  </form>
+  {% endif %}
+</section>
+
+<script>
+(function () {
+  // The "Other" text box under a dropdown only shows while Other is picked.
+  // Without JS it is always visible, so the form still works.
+  document.querySelectorAll('select[data-other]').forEach(function (sel) {
+    var box = document.getElementById(sel.getAttribute('data-other'));
+    if (!box) return;
+    function sync() { box.hidden = sel.value !== '__other__'; }
+    sel.addEventListener('change', sync);
+    sync();
+  });
+})();
+</script>
+{% include 'join/_copy.html' %}
+{% endblock %}

@@ -11,7 +11,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..800&family=Unbounded:wght@500..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{# Area translations first: landing.js merges window.RU_EXTRA when it runs. #}
+<script src="{{ url_for('static', filename='i18n/builder.js') }}" defer></script>
+<script src="{{ url_for('static', filename='i18n/join.js') }}" defer></script>
+<script src="{{ url_for('static', filename='i18n/responses.js') }}" defer></script>
 <script src="{{ url_for('static', filename='landing.js') }}" defer></script>
+{% block head %}{% endblock %}
 </head>
 <body>
 
@@ -24,17 +30,37 @@
     <span class="logo-word">competitions<span class="logo-tld">.c1562</span></span>
   </a>
   <nav aria-label="Main">
+    {% if g.user %}
+    <a class="nav-link nav-keep{% if request.endpoint == 'participant' %} is-here{% endif %}" href="{{ url_for('participant') }}" data-i18n="nav.mine">My competitions</a>
+    <a class="nav-link nav-keep{% if request.endpoint == 'organiser' %} is-here{% endif %}" href="{{ url_for('organiser') }}" data-i18n="nav.organise">Organise</a>
+    {% if is_admin() %}<a class="nav-link nav-keep{% if request.endpoint == 'admin' %} is-here{% endif %}" href="{{ url_for('admin') }}" data-i18n="nav.admin">Admin</a>{% endif %}
+    {% else %}
     <a class="nav-link" href="{{ url_for('landing') }}#formats" data-i18n="nav.formats">Formats</a>
     <a class="nav-link" href="{{ url_for('landing') }}#organisers" data-i18n="nav.organisers">For organisers</a>
+    {% endif %}
     <button class="chip" type="button" id="lang-switch" aria-label="Switch language">RU</button>
     <button class="chip chip-icon" type="button" id="theme-switch" aria-label="Switch theme">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 7a5 5 0 0 0 0 10z" class="half"/></svg>
     </button>
-    <a class="nav-signin" href="{{ url_for('login') }}" data-i18n="nav.signin">Sign in</a>
+    {% if g.user %}
+    <form class="nav-form" method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="nav-signin" type="submit" data-i18n="nav.signout">Sign out</button>
+    </form>
+    {% else %}
+    <a class="nav-signin" href="{{ url_for('auth.login') }}" data-i18n="nav.signin">Sign in</a>
+    {% endif %}
   </nav>
 </header>
 
 <main>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flashes" role="alert">
+  {% for category, m in messages %}<p class="flash flash-{{ category }}" data-i18n="{{ m.key }}">{{ m.text }}</p>{% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 {% block content %}{% endblock %}
 </main>
 

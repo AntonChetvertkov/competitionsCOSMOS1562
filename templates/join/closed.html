@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}{{ contest.title }} | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='join.css') }}">{% endblock %}
+{% block content %}
+<section class="join">
+  <p class="who">{{ contest.title }}</p>
+  <h1 data-i18n="j.closed.t">Not accepting entries</h1>
+  {% if reason == 'deadline' %}
+  <p class="desc" data-i18n="j.closed.deadline">The deadline for entries has passed.</p>
+  {% elif reason == 'full' %}
+  <p class="desc" data-i18n="j.closed.full">All places are taken, so no new entries are accepted.</p>
+  {% else %}
+  <p class="desc" data-i18n="j.closed.closed">This competition has closed and is not accepting entries.</p>
+  {% endif %}
+  <p class="back"><a class="btn btn-main" href="{{ url_for('participant') }}" data-i18n="j.mine">My competitions</a></p>
+</section>
+{% endblock %}

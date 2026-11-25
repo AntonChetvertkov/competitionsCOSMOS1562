@@ -1,0 +1,46 @@
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+venv/
+env/
+.venv/
+.env
+DBs/
+*.db
+*.sqlite3
+userTable.db
+*.log
+.vscode/
+.claude/
+.DS_Store
+Thumbs.db
+static/geolite/
+chat_files/
+dynamic/sats/*.json
+*.tmp
+*.swp
+.env
+__pycache__/
+DOCS.md
+ASTRO_NOTES.md
+SECURITY_AUDIT.md
+verify-clone/
+
+# Front-end build
+node_modules/
+skills-lock.json
+.agents/
+brag-output/
+brag-output-2026-11-02-183440/
+banner/
+# SatNOGS DB cache for the AI assistant (satfacts.py)
+dynamic/satnogs.json
+dynamic/satnogs.json.tmp
+# Events strip cache (spaceevents.py)
+dynamic/events.json
+dynamic/events.json.tmp
+
+# Uploaded files (questionnaire covers)
+uploads/

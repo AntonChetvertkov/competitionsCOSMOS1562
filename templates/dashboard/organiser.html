@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Organiser | competitions.c1562{% endblock %}
+{% block content %}
+<section class="dash">
+{% if can_organise %}
+  <div class="dash-head">
+    <h1 data-i18n="org.title">Your competitions</h1>
+    <a class="btn btn-main" href="{{ url_for('builder.new') }}" data-i18n="org.create">Create a competition</a>
+  </div>
+  {% if contests %}
+  <ul class="list">
+    {% for item in contests %}{% set c = item.contest %}
+    <li class="list-row">
+      <div class="row-main">
+        <p class="row-title">{{ c.title }} <span class="pill {% if c.status == 'published' %}pill-approved{% endif %}" data-i18n="cstatus.{{ c.status }}">{{ {'draft': 'Draft', 'published': 'Registration open', 'closed': 'Registration closed'}[c.status] }}</span></p>
+        <p class="row-meta">
+          <span><span data-i18n="org.entries">Entries:</span> {{ item.entries }}</span>
+          {% if c.registration_closes_at %}<span><span data-i18n="org.closes">Closes</span> {{ c.registration_closes_at.strftime('%d.%m.%Y') }}</span>{% endif %}
+        </p>
+      </div>
+      <div class="row-copy">
+        <a class="btn-ghost" href="{{ url_for('builder.edit', contest_id=c.id) }}" data-i18n="org.edit">Edit</a>
+        <a class="btn-ghost" href="{{ url_for('responses.index', contest_id=c.id) }}" data-i18n="org.answers">Answers</a>
+        {% if c.status == 'published' and c.invite_token %}
+        <input class="copy-field" id="link-{{ c.id }}" type="text" readonly value="{{ url_for('join.form', token=c.invite_token, _external=True) }}" aria-label="Invite link">
+        <button class="btn-ghost" type="button" data-copy="link-{{ c.id }}"><span class="copy-idle" data-i18n="org.copy">Copy link</span><span class="copy-done" data-i18n="org.copied" hidden>Copied</span></button>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty">
+    <h2 data-i18n="org.empty.t">No competitions yet</h2>
+    <p data-i18n="org.empty.d">Create a questionnaire, send the link to participants, and their answers will collect here.</p>
+  </div>
+  {% endif %}
+{% elif request_ and request_.status == 'pending' %}
+  <div class="dash-head"><h1 data-i18n="org.pending.t">Your request is waiting for review</h1></div>
+  <div class="panel">
+    <p data-i18n="org.pending.d">We check organisers by hand to keep spam out. This usually does not take long, and you can come back to this page to see the result.</p>
+    <p class="panel-line"><span data-i18n="org.pending.org">Organisation:</span> <strong>{{ request_.organisation }}</strong></p>
+  </div>
+{% else %}
+  <div class="dash-head"><h1 data-i18n="org.become">Become an organiser</h1></div>
+  {% if request_ and request_.status == 'rejected' %}
+  <p class="notice" data-i18n="org.rejected">Your last request was not approved. You can send a new one with more detail.</p>
+  {% endif %}
+  <form class="form panel" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field">
+      <label for="organisation" data-i18n="org.f.org">School, club or organisation</label>
+      <input id="organisation" name="organisation" type="text" maxlength="200" required>
+    </div>
+    <div class="field">
+      <label for="message" data-i18n="org.f.msg">What do you want to run? (optional)</label>
+      <textarea id="message" name="message" rows="5" maxlength="2000"></textarea>
+    </div>
+    <button class="btn btn-main" type="submit" data-i18n="org.send">Send request</button>
+  </form>
+{% endif %}
+</section>
+{% if can_organise and contests %}
+<script>
+document.querySelectorAll('[data-copy]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var input = document.getElementById(btn.dataset.copy);
+    var idle = btn.querySelector('.copy-idle'), done = btn.querySelector('.copy-done');
+    function ok() {
+      idle.hidden = true; done.hidden = false;
+      setTimeout(function () { idle.hidden = false; done.hidden = true; }, 1500);
+    }
+    function fallback() { input.focus(); input.select(); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(input.value).then(ok, fallback);
+    } else { fallback(); }
+  });
+});
+</script>
+{% endif %}
+{% endblock %}

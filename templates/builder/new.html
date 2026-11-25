@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}New competition | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='builder.css') }}">{% endblock %}
+{% block content %}
+<section class="auth">
+  <div class="auth-card">
+    <h1 data-i18n="b.new.title">New competition</h1>
+    <form class="form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field">
+        <label for="title" data-i18n="b.new.name">Competition name</label>
+        <input id="title" name="title" type="text" maxlength="200" required autofocus>
+        <p class="hint" data-i18n="b.new.hint">You start with round 0, the application form. Later rounds come next.</p>
+      </div>
+      <div class="bd-newactions">
+        <button class="btn btn-main" type="submit" data-i18n="b.new.create">Create</button>
+        <a class="btn-ghost bd-linkbtn" href="{{ url_for('organiser') }}" data-i18n="b.new.cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

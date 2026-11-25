@@ -6,8 +6,8 @@
     <h1 data-i18n="hero.title">See the work, not just the result.</h1>
     <p class="lede" data-i18n="hero.lede">Run a science fair, an olympiad, a hackathon or a club challenge. Participants show their progress as they go, you check it in a few taps, and judges and visitors score from their phones.</p>
     <div class="actions">
-      <a class="btn btn-main" href="{{ url_for('organiser_new') }}" data-i18n="hero.cta">Create a competition</a>
-      <a class="btn btn-plain" href="{{ url_for('login') }}" data-i18n="hero.join">I have an invite link</a>
+      <a class="btn btn-main" href="{{ url_for('organiser') }}" data-i18n="hero.cta">Create a competition</a>
+      <a class="btn btn-plain" href="{{ url_for('auth.login') }}" data-i18n="hero.join">I have an invite link</a>
     </div>
     <p class="small" data-i18n="hero.small">Sign in with Microsoft, Google, Yandex, VK or email.</p>
   </div>
@@ -194,7 +194,7 @@
   <div class="makers-in">
   <h2 data-i18n="m.title">Who makes this</h2>
   <p data-i18n="m.p">Two school students who build things and kept running into sign-up spreadsheets. It is part of <a href="https://cosmos1562.space">Cosmos1562</a>, our space project. Questions and ideas are welcome.</p>
-  <a class="btn btn-main" href="{{ url_for('organiser_new') }}" data-i18n="hero.cta">Create a competition</a>
+  <a class="btn btn-main" href="{{ url_for('organiser') }}" data-i18n="hero.cta">Create a competition</a>
   </div>
 </section>
 

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Edit questionnaire | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='builder.css') }}"><script src="{{ url_for('static', filename='builder.js') }}" defer></script>{% endblock %}
+{% block content %}
+<script id="builder-initial" type="application/json">{{ initial|tojson }}</script>
+<div class="bd" id="bd-root"
+  data-form-json="{{ url_for('builder.form_json', contest_id=contest.id) }}"
+  data-publish="{{ url_for('builder.publish', contest_id=contest.id) }}"
+  data-close="{{ url_for('builder.close', contest_id=contest.id) }}"
+  data-link="{{ url_for('builder.regenerate_link', contest_id=contest.id) }}"
+  data-cover="{{ url_for('builder.cover', contest_id=contest.id) }}"
+  data-delete="{{ url_for('builder.delete', contest_id=contest.id) }}"
+  data-preview="{{ url_for('join.preview', contest_id=contest.id) }}"
+  data-responses="{{ url_for('responses.index', contest_id=contest.id) }}"
+  data-back="{{ url_for('organiser') }}">
+
+  <div class="bd-bar">
+    <div class="bd-bar-in">
+      <div class="bd-bar-left">
+        <a class="bd-back" href="{{ url_for('organiser') }}" data-i18n="b.back">Your competitions</a>
+        <span class="pill" id="bd-status"></span>
+        <span class="bd-save" id="bd-save"></span>
+      </div>
+      <div class="bd-bar-right" id="bd-actions"></div>
+    </div>
+  </div>
+  <div class="sr-only" id="bd-live" aria-live="polite" role="status"></div>
+
+  <div class="bd-page">
+    <h1 class="sr-only" data-i18n="b.h1">Questionnaire editor</h1>
+    <p class="notice bd-error" id="bd-error" role="alert" hidden></p>
+
+    <div class="bd-linkrow" id="bd-linkrow" hidden></div>
+
+    <ol class="bd-rounds" aria-label="Rounds" data-aria="ph.rounds">
+      <li class="bd-round is-current" aria-current="step"><span class="bd-round-n">0</span><span data-i18n="b.round0.n">Application form</span></li>
+      <li class="bd-round is-soon"><span data-i18n="b.round.soon">Next rounds: coming soon</span></li>
+    </ol>
+
+    <section class="bd-head" aria-labelledby="bd-head-h">
+      <h2 class="sr-only" id="bd-head-h" data-i18n="b.head">Competition name and description</h2>
+      <div class="bd-cover" id="bd-cover">
+        <img id="bd-cover-img" alt="" hidden>
+        <div class="bd-cover-tools">
+          <button class="btn-ghost" type="button" id="bd-cover-add"></button>
+          <button class="btn-ghost" type="button" id="bd-cover-remove" hidden></button>
+          <input type="file" id="bd-cover-file" accept="image/png,image/jpeg,image/webp" hidden>
+        </div>
+        <p class="bd-field-err" id="bd-cover-err" data-err-for="cover" role="alert" hidden></p>
+      </div>
+      <label class="sr-only" for="bd-title" data-i18n="b.title.l">Competition name</label>
+      <input class="bd-title" id="bd-title" type="text" maxlength="200" data-ph="ph.title" autocomplete="off">
+      <p class="bd-field-err" data-err-for="title" role="alert" hidden></p>
+      <label class="sr-only" for="bd-desc" data-i18n="b.desc.l">Description</label>
+      <textarea class="bd-desc" id="bd-desc" rows="2" data-ph="ph.desc"></textarea>
+    </section>
+
+    <details class="bd-settings" id="bd-settings" open>
+      <summary data-i18n="b.settings">Settings</summary>
+      <div class="bd-settings-grid form">
+        <div class="field">
+          <label for="bd-deadline" data-i18n="b.deadline">Registration closes</label>
+          <div class="bd-inline">
+            <input id="bd-deadline" type="datetime-local">
+            <button class="btn-ghost" type="button" id="bd-deadline-clear" data-i18n="b.deadline.clear">Clear</button>
+          </div>
+          <p class="hint" data-i18n="b.deadline.hint">Leave empty for no deadline.</p>
+          <p class="bd-field-err" data-err-for="registration_closes_at" role="alert" hidden></p>
+        </div>
+        <div class="field">
+          <label for="bd-max" data-i18n="b.max">Maximum entries</label>
+          <input id="bd-max" type="number" min="1" step="1" inputmode="numeric">
+          <p class="hint" data-i18n="b.max.hint">Leave empty for no limit.</p>
+          <p class="bd-field-err" data-err-for="max_entries" role="alert" hidden></p>
+        </div>
+        <fieldset class="bd-fieldset">
+          <legend data-i18n="b.approval">Who takes part</legend>
+          <label class="bd-radio"><input type="radio" name="bd-approval" value="auto"><span data-i18n="b.approval.auto">Everyone who answers takes part</span></label>
+          <label class="bd-radio"><input type="radio" name="bd-approval" value="manual"><span data-i18n="b.approval.manual">I approve each entry</span></label>
+        </fieldset>
+        <fieldset class="bd-fieldset">
+          <legend data-i18n="b.kind">Participation</legend>
+          <label class="bd-radio"><input type="radio" name="bd-kind" value="individual"><span data-i18n="b.kind.ind">Individual</span></label>
+          <label class="bd-radio"><input type="radio" name="bd-kind" value="team"><span data-i18n="b.kind.team">Teams</span></label>
+        </fieldset>
+        <div class="field" id="bd-team-field" hidden>
+          <label for="bd-teammax" data-i18n="b.teammax">Max team size</label>
+          <input id="bd-teammax" type="number" min="1" step="1" inputmode="numeric">
+          <p class="hint" data-i18n="b.team.hint">The captain answers the form and gets a code for teammates.</p>
+          <p class="bd-field-err" data-err-for="team_max" role="alert" hidden></p>
+        </div>
+        <div class="field bd-wide">
+          <label for="bd-thanks" data-i18n="b.thanks">Message after sending</label>
+          <textarea id="bd-thanks" rows="3"></textarea>
+        </div>
+      </div>
+    </details>
+
+    <section class="bd-questions" aria-labelledby="bd-q-h">
+      <h2 class="bd-round-h" id="bd-q-h" data-i18n="b.round0.h">Round 0: application form</h2>
+      <p class="notice" id="bd-locked" data-i18n="b.locked" hidden>People have already answered, so questions can't change. You can still edit the settings.</p>
+      <div id="bd-qlist"></div>
+      <div class="bd-add" id="bd-add"></div>
+    </section>
+
+    <div class="bd-danger" id="bd-danger" hidden>
+      <button class="bd-danger-link" type="button" id="bd-del-open" data-i18n="b.del.link">Delete questionnaire</button>
+      <form class="bd-del-confirm" id="bd-del-confirm" method="post" action="{{ url_for('builder.delete', contest_id=contest.id) }}" hidden>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p data-i18n="b.del.warn">This deletes the questionnaire for good.</p>
+        <button class="btn-ghost bd-danger-btn" type="submit" data-i18n="b.del.go">Delete</button>
+        <button class="btn-ghost" type="button" id="bd-del-cancel" data-i18n="b.del.cancel">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <dialog class="bd-dialog" id="bd-pub-dialog" aria-labelledby="bd-pub-h">
+    <form id="bd-pub-form" class="form">
+      <h2 id="bd-pub-h" data-i18n="b.pub.title">Open registration</h2>
+      <p data-i18n="b.pub.text">Anyone with your link will be able to fill in the application form.</p>
+      <label class="bd-radio bd-consent"><input type="checkbox" id="bd-consent" required><span data-i18n="b.pub.consent">I have permission to collect these participants' data (from parents for under-18s)</span></label>
+      <p class="bd-field-err" id="bd-pub-err" role="alert" hidden></p>
+      <div class="bd-dialog-actions">
+        <button class="btn btn-main" type="submit" data-i18n="b.pub.go">Open registration</button>
+        <button class="btn-ghost" type="button" id="bd-pub-cancel" data-i18n="b.pub.cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="bd-toast" id="bd-toast" hidden></div>
+</div>
+{% endblock %}

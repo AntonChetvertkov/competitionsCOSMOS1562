@@ -1,0 +1,26 @@
+<script>
+(function () {
+  if (window.__joinCopy) return;
+  window.__joinCopy = true;
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-join-copy]') : null;
+    if (!btn) return;
+    var input = document.getElementById(btn.getAttribute('data-join-copy'));
+    if (!input) return;
+    function done() {
+      var idle = btn.querySelector('.copy-idle'), ok = btn.querySelector('.copy-done');
+      if (idle && ok) {
+        idle.hidden = true; ok.hidden = false;
+        setTimeout(function () { idle.hidden = false; ok.hidden = true; }, 1800);
+      }
+    }
+    function fallback() {
+      input.select();
+      try { document.execCommand('copy'); done(); } catch (err) {}
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(input.value).then(done, fallback);
+    } else { fallback(); }
+  });
+})();
+</script>

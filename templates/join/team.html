@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ entry.team_name or contest.title }} | competitions.c1562{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='join.css') }}">{% endblock %}
+{% block content %}
+<section class="join">
+  <p class="who">{{ contest.title }}</p>
+  <h1>{{ entry.team_name }}</h1>
+  <p class="desc"><span data-i18n="j.team.members">Members</span>: {{ members }}{% if contest.team_max %} / {{ contest.team_max }}{% endif %}</p>
+
+  {% if in_this_team %}
+  <p class="notice" data-i18n="j.team.inthis">You are already in this team.</p>
+  <p class="back"><a class="btn btn-main" href="{{ url_for('participant') }}" data-i18n="j.mine">My competitions</a></p>
+  {% elif has_other %}
+  <p class="notice" data-i18n="j.err.already">You already have an entry in this competition.</p>
+  <p class="back"><a class="btn btn-main" href="{{ url_for('participant') }}" data-i18n="j.mine">My competitions</a></p>
+  {% elif not can_join %}
+  <p class="notice" data-i18n="j.err.closed">Entries for this competition are closed.</p>
+  {% elif contest.team_max and members >= contest.team_max %}
+  <p class="notice" data-i18n="j.err.team_full">This team is full.</p>
+  {% else %}
+  <p class="who"><span data-i18n="j.signedin">You're signed in as</span> <strong>{{ g.user.full_name }}</strong></p>
+  <form class="form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-main" type="submit" data-i18n="j.team.join">Join team</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}
