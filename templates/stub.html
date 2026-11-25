@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{# Placeholder for a page that isn't built yet. app.py passes `page`,
+   which picks the stub.<page>.* strings (English here, Russian in landing.js). #}
+{% block title %}{{ title }} | competitions.c1562{% endblock %}
+{% block content %}
+<section class="stub">
+  <div class="stub-in">
+    <p class="stub-tag" data-i18n="stub.tag">Not built yet</p>
+    <h1 data-i18n="stub.{{ page }}.t">{{ title }}</h1>
+    <p class="stub-text" data-i18n="stub.{{ page }}.d">{{ text }}</p>
+    <a class="btn btn-main" href="{{ url_for('landing') }}" data-i18n="stub.back">Back to the home page</a>
+  </div>
+</section>
+{% endblock %}

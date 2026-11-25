@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}competitions.c1562{% endblock %}</title>
+<meta name="description" content="Run science fairs, olympiads, hackathons and club challenges where the work shows: progress posts, quick checks, judging and voting from phones.">
+<link rel="icon" href="{{ url_for('static', filename='logo-mark.svg') }}" type="image/svg+xml">
+<script>(function(){var d=document.documentElement,t=null,l=null;try{t=localStorage.getItem('c1562.theme');l=localStorage.getItem('c1562.lang')}catch(e){}d.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.lang=l||((navigator.language||'en').toLowerCase().indexOf('ru')===0?'ru':'en')})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..800&family=Unbounded:wght@500..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+<script src="{{ url_for('static', filename='landing.js') }}" defer></script>
+</head>
+<body>
+
+<header class="top">
+  <a class="logo" href="{{ url_for('landing') }}" aria-label="competitions.c1562, home">
+    <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="9" cy="52" r="3.6"/><circle cx="19" cy="40" r="5"/><circle cx="32" cy="29.5" r="6.4"/>
+      <path class="star" d="M51 6 L54.4 15.6 L64 19 L54.4 22.4 L51 32 L47.6 22.4 L38 19 L47.6 15.6 Z"/>
+    </svg>
+    <span class="logo-word">competitions<span class="logo-tld">.c1562</span></span>
+  </a>
+  <nav aria-label="Main">
+    <a class="nav-link" href="{{ url_for('landing') }}#formats" data-i18n="nav.formats">Formats</a>
+    <a class="nav-link" href="{{ url_for('landing') }}#organisers" data-i18n="nav.organisers">For organisers</a>
+    <button class="chip" type="button" id="lang-switch" aria-label="Switch language">RU</button>
+    <button class="chip chip-icon" type="button" id="theme-switch" aria-label="Switch theme">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 7a5 5 0 0 0 0 10z" class="half"/></svg>
+    </button>
+    <a class="nav-signin" href="{{ url_for('login') }}" data-i18n="nav.signin">Sign in</a>
+  </nav>
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<footer class="foot">
+  {% block footnote %}<p></p>{% endblock %}
+  <p class="foot-links"><a href="{{ url_for('privacy') }}" data-i18n="foot.privacy">Privacy</a><a href="{{ url_for('contact') }}" data-i18n="foot.contact">Contact</a><a href="https://cosmos1562.space">cosmos1562.space</a></p>
+</footer>
+
+</body>
+</html>

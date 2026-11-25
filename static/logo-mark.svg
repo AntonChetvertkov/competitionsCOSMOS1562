@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="competitions.c1562">
+  <!-- Rising orbit: each dot is a stage of the work, growing as it climbs; the last one is the result. -->
+  <circle cx="9" cy="52" r="3.6" fill="#1a47c4"/>
+  <circle cx="19" cy="40" r="5" fill="#1a47c4"/>
+  <circle cx="32" cy="29.5" r="6.4" fill="#1a47c4"/>
+  <path d="M51 6 L54.4 15.6 L64 19 L54.4 22.4 L51 32 L47.6 22.4 L38 19 L47.6 15.6 Z" fill="#ff6a13"/>
+</svg>
